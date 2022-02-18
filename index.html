@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crypto Superb Owl Commercial</title>
+  <script src="../jsgame0.js"></script>
+  <style type="text/css" media="screen">
+body {
+  background-color: white;
+  color: black;
+}
+.hidden {
+  display: none;
+}
+#original {
+  margin-left: 1em;
+}
+  </style>
+</head>
+
+<body>
+
+<main>
+<h1>Crypto Superb Owl Commercial</h1>
+
+<canvas id="screen">
+The game screen appears here if your browser supports the Canvas API.
+</canvas>
+<section id="controls">
+  <button type="button" id="reset">Reset</button>
+  <button type="button" id="pause">Pause</button>
+</section>
+
+<p>Create your own Superb Owl commercial.</p>
+
+<p>Now you just need 14 million dollars.</p>
+
+</main>
+
+<script>
+WIDTH = Math.floor(1920 / 2);
+HEIGHT = Math.floor(1080 / 2);
+
+/*
+ * Array of string background color names for the square.
+ */
+const COLORS = [
+  'yellow',
+  'red',
+  'purple',
+  'green',
+  'aqua'
+];
+
+/*
+ * Integer amount to move the square.
+ */
+const INCREMENT = 2;
+
+var square;
+
+function reset() {
+  let size = Math.min(WIDTH, HEIGHT) / 4;
+  square = new Rect(size, (2 * size) - Math.floor(size / 2), size, size);
+  square.index = 0;
+  square.dx = -INCREMENT;
+  square.dy = -INCREMENT;
+}
+
+function draw() {
+  screen.clear('black');
+  screen.draw.filled_rect(square, COLORS[square.index]);
+}
+
+function update(dt) {
+  square.x += square.dx;
+  square.y += square.dy;
+
+  let bounce = false;
+  if (square.top <= 0) {
+    square.dy = INCREMENT;
+    bounce = true;
+  }
+  if (square.right >= WIDTH) {
+    square.dx = -INCREMENT;
+    bounce = true;
+  }
+  if (square.bottom >= HEIGHT) {
+    square.dy = -INCREMENT;
+    bounce = true;
+  }
+  if (square.left <= 0) {
+    square.dx = INCREMENT;
+    bounce = true;
+  }
+  if (bounce) {
+    square.index = (square.index + 1) % COLORS.length;
+  }
+}
+
+window.addEventListener('load', (event) => {
+  reset();
+  screen.set_mode('#screen', '#reset', '#pause');
+});
+</script>
+</body>
+
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fake QR Code</title>
+  <style type="text/css" media="screen">
+body {
+  background-color: white;
+  color: black;
+}
+#qrCode {
+  display: block;
+  margin: 1em;
+}
+  </style>
+</head>
+
+<body>
+
+<main>
+<h1>Fake QR Code</h1>
+
+<form id="qrForm" name="qrForm" action="" method="get">
+<p><label for="version">Version:</label>
+<input type="number" id="version" name="version" autofocus required max="9" min="1" step="1" placeholder="1" value="1">
+<button type="submit">Draw</button></p>
+</form>
+
+<p>Create an image that looks like a
+<a href="https://en.wikipedia.org/wiki/QR_code" target="_blank">quick response code (QR code)</a>
+but is just random noise.</p>
+
+<output id="qrCode" name="qrCode" for="qrForm"></output>
+</main>
+
+<script>
+/*
+ * Integer width or height in pixels of each square.
+ */
+const SCALE = 10;
+
+/*
+ * Return a random integer N such that min <= N < max.
+ */
+function getRandomInteger(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor((Math.random() * (max - min)) + min);
+}
+
+/*
+ * Draw in the canvas to make it look like a QR code.
+ */
+function drawCode(parentID, version) {
+  let parent = document.querySelector(parentID),
+      target = parent.querySelector('canvas'),
+      width = (4 * version) + 17,
+      height = width;
+  if (target == null) {
+    parent.innerHTML = '';
+    target = document.createElement('canvas');
+    parent.appendChild(target);
+  }
+  if ((target.width != (width * SCALE)) || (target.height != (height * SCALE))) {
+    target.width = width * SCALE;
+    target.height = height * SCALE;
+  }
+
+  let context = target.getContext('2d');
+  context.clearRect(0, 0, target.width, target.height);
+  context.fillStyle = 'black';
+  for (let x = 0; x < width; x++) {
+    for (let y = 0; y < height; y++) {
+      if (x < 8) {
+        if (y < 8) {
+          // Upper left corner
+          continue;
+        }
+      }
+      if (x > (width - 9)) {
+        if ((y < 8) || (y > (height - 9))) {
+          // Upper right or lower right corner
+          continue;
+        }
+      }
+      if (getRandomInteger(0, 100) < 50) {
+        context.fillRect(x * SCALE, y * SCALE, SCALE, SCALE);
+      }
+    }
+  }
+  for (let [x, y] of [
+    // Upper left corner
+    [0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6],
+    [6, 0], [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [6, 6],
+    [1, 0], [2, 0], [3, 0], [4, 0], [5, 0],
+    [1, 6], [2, 6], [3, 6], [4, 6], [5, 6],
+    [2, 2], [3, 2], [4, 2], [2, 3], [3, 3], [4, 3], [2, 4], [3, 4], [4, 4],
+
+    // Upper right corner
+    [width - 7, 0], [width - 7, 1], [width - 7, 2], [width - 7, 3], [width - 7, 4], [width - 7, 5], [width - 7, 6],
+    [width - 1, 0], [width - 1, 1], [width - 1, 2], [width - 1, 3], [width - 1, 4], [width - 1, 5], [width - 1, 6],
+    [width - 6, 0], [width - 5, 0], [width - 4, 0], [width - 3, 0], [width - 2, 0],
+    [width - 6, 6], [width - 5, 6], [width - 4, 6], [width - 3, 6], [width - 2, 6],
+    [width - 5, 2], [width - 4, 2], [width - 3, 2], [width - 5, 3], [width - 4, 3], [width - 3, 3], [width - 5, 4], [width - 4, 4], [width - 3, 4],
+
+    // Lower right corner - because this is not a real QR code
+    [width - 7, height - 7], [width - 7, height - 6], [width - 7, height - 5], [width - 7, height - 4], [width - 7, height - 3], [width - 7, height - 2], [width - 7, height - 1],
+    [width - 1, height - 7], [width - 1, height - 6], [width - 1, height - 5], [width - 1, height - 4], [width - 1, height - 3], [width - 1, height - 2], [width - 1, height - 1],
+    [width - 6, height - 7], [width - 5, height - 7], [width - 4, height - 7], [width - 3, height - 7], [width - 2, height - 7],
+    [width - 6, height - 1], [width - 5, height - 1], [width - 4, height - 1], [width - 3, height - 1], [width - 2, height - 1],
+    [width - 5, height - 5], [width - 4, height - 5], [width - 3, height - 5], [width - 5, height - 4], [width - 4, height - 4], [width - 3, height - 4], [width - 5, height - 3], [width - 4, height - 3], [width - 3, height - 3]
+  ]) {
+    context.fillRect(x * SCALE, y * SCALE, SCALE, SCALE);
+  }
+}
+
+const form = document.querySelector('#qrForm');
+form.addEventListener('submit', (event) => {
+  drawCode('#qrCode', parseInt(form.version.value, 10));
+  event.preventDefault();
+});
+</script>
+</body>
+
+</html>

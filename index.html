@@ -25,6 +25,8 @@ body {
 <main>
 <h1>Crypto Superb Owl Commercial</h1>
 
+<canvas id="qrcode" class="hidden"></canvas>
+
 <canvas id="screen">
 The game screen appears here if your browser supports the Canvas API.
 </canvas>
@@ -36,6 +38,12 @@ The game screen appears here if your browser supports the Canvas API.
 <p>Create your own Superb Owl commercial.</p>
 
 <p>Now you just need 14 million dollars.</p>
+
+<p>
+<em>DO NOT try to scan the code.</em>
+It looks like a
+<a href="https://en.wikipedia.org/wiki/QR_code" target="_blank">quick response code (QR code)</a>
+but is just random noise.</p>
 
 </main>
 
@@ -59,6 +67,80 @@ const COLORS = [
  */
 const INCREMENT = 2;
 
+/*
+ * Integer width or height in pixels of each square in the QR code.
+ */
+const SCALE = 10;
+
+/*
+ * Return a random integer N such that min <= N < max.
+ */
+function getRandomInteger(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor((Math.random() * (max - min)) + min);
+}
+
+/*
+ * Draw in the canvas to make it look like a QR code.
+ */
+function drawCode(version) {
+  let target = document.querySelector('#qrcode'),
+      width = (4 * version) + 17,
+      height = width;
+  if ((target.width != (width * SCALE)) || (target.height != (height * SCALE))) {
+    target.width = width * SCALE;
+    target.height = height * SCALE;
+  }
+
+  let context = target.getContext('2d');
+  context.clearRect(0, 0, target.width, target.height);
+  context.fillStyle = 'black';
+  for (let x = 0; x < width; x++) {
+    for (let y = 0; y < height; y++) {
+      if (x < 8) {
+        if (y < 8) {
+          // Upper left corner
+          continue;
+        }
+      }
+      if (x > (width - 9)) {
+        if ((y < 8) || (y > (height - 9))) {
+          // Upper right or lower right corner
+          continue;
+        }
+      }
+      if (getRandomInteger(0, 100) < 50) {
+        context.fillRect(x * SCALE, y * SCALE, SCALE, SCALE);
+      }
+    }
+  }
+  for (let [x, y] of [
+    // Upper left corner
+    [0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6],
+    [6, 0], [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [6, 6],
+    [1, 0], [2, 0], [3, 0], [4, 0], [5, 0],
+    [1, 6], [2, 6], [3, 6], [4, 6], [5, 6],
+    [2, 2], [3, 2], [4, 2], [2, 3], [3, 3], [4, 3], [2, 4], [3, 4], [4, 4],
+
+    // Upper right corner
+    [width - 7, 0], [width - 7, 1], [width - 7, 2], [width - 7, 3], [width - 7, 4], [width - 7, 5], [width - 7, 6],
+    [width - 1, 0], [width - 1, 1], [width - 1, 2], [width - 1, 3], [width - 1, 4], [width - 1, 5], [width - 1, 6],
+    [width - 6, 0], [width - 5, 0], [width - 4, 0], [width - 3, 0], [width - 2, 0],
+    [width - 6, 6], [width - 5, 6], [width - 4, 6], [width - 3, 6], [width - 2, 6],
+    [width - 5, 2], [width - 4, 2], [width - 3, 2], [width - 5, 3], [width - 4, 3], [width - 3, 3], [width - 5, 4], [width - 4, 4], [width - 3, 4],
+
+    // Lower right corner - because this is not a real QR code
+    [width - 7, height - 7], [width - 7, height - 6], [width - 7, height - 5], [width - 7, height - 4], [width - 7, height - 3], [width - 7, height - 2], [width - 7, height - 1],
+    [width - 1, height - 7], [width - 1, height - 6], [width - 1, height - 5], [width - 1, height - 4], [width - 1, height - 3], [width - 1, height - 2], [width - 1, height - 1],
+    [width - 6, height - 7], [width - 5, height - 7], [width - 4, height - 7], [width - 3, height - 7], [width - 2, height - 7],
+    [width - 6, height - 1], [width - 5, height - 1], [width - 4, height - 1], [width - 3, height - 1], [width - 2, height - 1],
+    [width - 5, height - 5], [width - 4, height - 5], [width - 3, height - 5], [width - 5, height - 4], [width - 4, height - 4], [width - 3, height - 4], [width - 5, height - 3], [width - 4, height - 3], [width - 3, height - 3]
+  ]) {
+    context.fillRect(x * SCALE, y * SCALE, SCALE, SCALE);
+  }
+}
+
 var square;
 
 function reset() {
@@ -67,11 +149,15 @@ function reset() {
   square.index = 0;
   square.dx = -INCREMENT;
   square.dy = -INCREMENT;
+
+  drawCode(3);
+  images['qrcode'] = document.querySelector('#qrcode');
 }
 
 function draw() {
   screen.clear('black');
   screen.draw.filled_rect(square, COLORS[square.index]);
+  screen.blit('qrcode', new Rect(square.x + SCALE, square.y + SCALE, square.width - (SCALE * 2), square.height - (SCALE * 2)));
 }
 
 function update(dt) {

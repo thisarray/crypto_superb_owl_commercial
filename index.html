@@ -88,7 +88,7 @@ function drawCode(version) {
   let target = document.querySelector('#qrcode'),
       width = (4 * version) + 17,
       height = width;
-  if ((target.width != (width * SCALE)) || (target.height != (height * SCALE))) {
+  if ((target.width !== (width * SCALE)) || (target.height !== (height * SCALE))) {
     target.width = width * SCALE;
     target.height = height * SCALE;
   }

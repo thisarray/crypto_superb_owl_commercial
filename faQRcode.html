@@ -64,7 +64,7 @@ function drawCode(parentID, version) {
     target = document.createElement('canvas');
     parent.appendChild(target);
   }
-  if ((target.width != (width * SCALE)) || (target.height != (height * SCALE))) {
+  if ((target.width !== (width * SCALE)) || (target.height !== (height * SCALE))) {
     target.width = width * SCALE;
     target.height = height * SCALE;
   }
